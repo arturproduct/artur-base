@@ -172,6 +172,21 @@ img{display:block}
 .about .logo img{width:100%;height:100%;object-fit:cover}
 .about h1{font-size:22px;font-weight:900;margin:0 0 8px}
 .about p{color:var(--muted);font-weight:500;margin:0 0 18px;font-size:13.5px}
+.club .card{background:var(--surface);border-radius:var(--r-lg);padding:18px 16px;box-shadow:var(--shadow);margin-bottom:14px}
+.club .st{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.club .st .ic{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);flex:0 0 auto}
+.club .st .ic svg{width:22px;height:22px;stroke:var(--accent);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.club .st.on .ic{background:rgba(31,168,100,.14)} .club .st.on .ic svg{stroke:var(--go)}
+.club .st b{display:block;font-size:16px;line-height:1.2} .club .st span{display:block;color:var(--muted);font-size:12.5px;font-weight:600;margin-top:3px}
+.club .price{font-size:26px;font-weight:900;letter-spacing:-.3px;margin:4px 0 2px} .club .price small{font-size:13px;font-weight:600;color:var(--muted);letter-spacing:0}
+.club ul{margin:10px 0 16px;padding:0;list-style:none} .club li{position:relative;padding-left:22px;font-size:13.5px;font-weight:500;line-height:1.45;margin-bottom:8px}
+.club li::before{content:'';position:absolute;left:0;top:8px;width:12px;height:4px;border-radius:2px;background:var(--accent)}
+.club .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;border-radius:13px;padding:14px 16px;font-weight:700;font-size:14px;background:var(--accent);color:var(--on-accent)}
+.club .btn.sec2{background:var(--surface-2);color:var(--text);margin-top:8px}
+.club .btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.club .note{color:var(--muted);font-size:12px;font-weight:600;line-height:1.45;margin-top:10px}
+.club .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.club .row2 div{background:var(--surface);border-radius:12px;padding:10px 12px;box-shadow:var(--shadow)} .club .row2 span{display:block;color:var(--muted);font-size:11px;font-weight:700} .club .row2 b{display:block;font-size:14px;margin-top:3px}
 .kv{border-top:1px solid var(--line)}
 .kv div{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid var(--line);font-size:13px;font-weight:500}
 .kv div span:first-child{color:var(--muted)}
@@ -263,6 +278,7 @@ img{display:block}
     <section class="screen" id="s-base"></section>
     <section class="screen" id="s-brands"></section>
     <section class="screen" id="s-saved"></section>
+    <section class="screen" id="s-club"></section>
     <section class="screen" id="s-about"></section>
   </main>
   <nav class="tabbar"><div class="in" id="tabs"></div></nav>
@@ -280,7 +296,13 @@ const SHEET_CSV_URL   = "";
 const BRANDS_CSV_URL  = "";
 const DEFAULT_THEME   = "light";
 const CHANNEL_URL     = "https://t.me/arturproduct1";
-const CONTACT_URL     = "https://t.me/arturproduct1";
+const CONTACT_URL     = "https://t.me/ArturProductBot?start=club";   // «Обсудить с Артуром» → бот клуба
+let   CLUB_API        = "";      // адрес сервера бота; можно задать файлом club_config.json рядом с index.html: {"api":"https://club.…","price":"5 000 ₽ / месяц"}
+const CLUB = {
+  price: "5 000 ₽ / месяц",                    // напр. "5 000 ₽ / месяц"
+  promo_note: "По промокоду первый месяц — 4 000 ₽, дальше 5 000 ₽",
+  what: ["Товары, которых в канале не будет, — с цифрами продаж, иногда с перепиской с заводом и ценой закупки", "Обсуждение под каждым: спросили, какой завод и какой риск, — Артур ответил", "Селлеры, которые эти товары тестируют и рассказывают, что вышло"],
+};
 const FOCUS = {
   id: "P004",
   eyebrow: "Сейчас в работе",
@@ -332,6 +354,7 @@ const initials = name => name.split(/\s+/).slice(0,2).map(w => w[0]).join("").to
 const budgetNum = b => { const m = (b||"").replace(/\s/g,"").match(/(\d+)/); return m ? +m[1] : null; };
 
 const ICONS = {
+  lock:'<svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
   home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>',
   base:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M3 10h18M9 4v16"/></svg>',
   book:'<svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19a2 2 0 0 1 2-2h13M8 7h7"/></svg>',
@@ -406,6 +429,7 @@ function renderHome() {
     </div>
     ${lb ? `<div class="sec"><h3>Разбор бренда</h3><button data-tab="brands">Все бренды</button></div>
     <button class="feat" data-brand="${lb.id}"><img src="${lb.cover}" alt=""><span class="kind">Бренд</span><div class="tx"><b>${esc(lb.name)}</b><span>${esc(lb.idea || lb.title)}</span></div></button>` : ""}
+    ${saved.size ? `<div class="sec"><h3>Избранное</h3><button data-tab="saved">Все ${saved.size}</button></div>${listHTML(PRODUCTS.filter(p => saved.has(p.id)).slice(0, 3))}` : ""}
     <div class="sec"><h3>Быстрый доступ</h3></div>
     <div class="tiles">${QUICK.map(q => {
       const n = q.tab ? BRANDS.length : PRODUCTS.filter(q.test).length;
@@ -446,6 +470,51 @@ function renderSaved() {
     ${items.length ? listHTML(items) : `<div class="empty"><b>Пока пусто</b>Откройте товар и нажмите звёздочку в углу фото — он появится здесь.</div>`}`;
 }
 
+/* ---------- Клуб: кабинет подписчика ---------- */
+let club = { status: "unknown", until: null, chat_url: null, join_url: CONTACT_URL, member_since: null, cancelled: false };
+function clubStatusHTML() {
+  const what = CLUB.what.map(w => `<li>${esc(w)}</li>`).join("");
+  if (club.status === "active") return `
+    <div class="card"><div class="st on"><div class="ic">${ICONS.check || ICONS.lock}</div><div><b>Вы в клубе</b><span>Доступ до ${esc(club.until || "—")}${club.cancelled ? " · продление отключено" : " · продлевается автоматически"}</span></div></div>
+      <a class="btn" href="${club.chat_url || CONTACT_URL}" data-ext="1">${ICONS.send}Открыть закрытый чат</a>
+      ${club.cancelled ? `<a class="btn sec2" href="${club.join_url}" data-ext="1">Возобновить подписку</a>` : ""}
+      <p class="note">Управление подпиской и карта — в боте @tribute. Вопрос Артуру — просто напишите в @ArturProductBot.</p></div>
+    <div class="row2"><div><span>В клубе с</span><b>${esc(club.member_since || "—")}</b></div><div><span>Оплачено до</span><b>${esc(club.until || "—")}</b></div></div>`;
+  if (club.status === "expired") return `
+    <div class="card"><div class="st"><div class="ic">${ICONS.lock}</div><div><b>Доступ закрыт</b><span>Подписка была до ${esc(club.until || "—")}</span></div></div>
+      <ul>${what}</ul>
+      <a class="btn" href="${club.join_url}" data-ext="1">${ICONS.send}Продлить доступ${CLUB.price ? " · " + esc(CLUB.price) : ""}</a>
+      <p class="note">Всё продолжится с того же места — чат тот же, история на месте.</p></div>`;
+  return `
+    <div class="card"><div class="st"><div class="ic">${ICONS.lock}</div><div><b>Закрытый клуб</b><span>Товары для маркетплейсов, пока их не нашли все</span></div></div>
+      ${CLUB.price ? `<div class="price">${esc(CLUB.price.split("/")[0].trim())} <small>/ ${esc((CLUB.price.split("/")[1] || "месяц").trim())}</small></div>` : ""}
+      ${CLUB.promo_note ? `<p class="note" style="margin:0 0 6px">${esc(CLUB.promo_note)}</p>` : ""}
+      <ul>${what}</ul>
+      <a class="btn" href="${club.join_url}" data-ext="1">${ICONS.send}Вступить в клуб</a>
+      <p class="note">Оплата картой через Tribute, доступ в чат — сразу после оплаты. Отменить можно в любой момент.</p></div>
+    <div class="blk"><h4>Как это работает</h4><p>Нажимаете «Вступить» — открывается бот, в нём кнопка оплаты. После оплаты Tribute сам добавит вас в чат, а здесь появится ваш статус и дата продления.</p></div>`;
+}
+function renderClub() {
+  const name = tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.first_name;
+  document.getElementById("s-club").innerHTML = `
+    <div class="club"><div class="head"><div class="txt"><h1>Клуб</h1><p>${club.status === "active" ? (name ? "Рады видеть, " + esc(name) : "Ваш кабинет") : "Кабинет подписчика"}</p></div></div>
+    ${clubStatusHTML()}</div>`;
+}
+let clubCfgLoaded = false;
+async function loadClubConfig() {
+  if (clubCfgLoaded || location.protocol === "file:") return; clubCfgLoaded = true;
+  try { const r = await fetch("club_config.json?" + Date.now(), { cache: "no-store" }); if (r.ok) { const c = await r.json(); if (c.api) CLUB_API = c.api; if (c.price) CLUB.price = c.price; if (c.promo_note !== undefined) CLUB.promo_note = c.promo_note; if (Array.isArray(c.what) && c.what.length) CLUB.what = c.what; } } catch (e) {}
+}
+async function loadClub(from) {
+  await loadClubConfig();
+  if (!CLUB_API || !tg || !tg.initData) { renderClub(); return; }
+  try {
+    const r = await fetch(CLUB_API.replace(/\/$/, "") + "/api/me" + (from ? "?from=" + encodeURIComponent(from) : ""), { headers: { "X-Init-Data": tg.initData } });
+    if (r.ok) { const j = await r.json(); if (j.ok) { club = { ...club, ...j }; } }
+  } catch (e) { /* сервер недоступен — показываем базовый экран */ }
+  renderClub();
+}
+
 function renderAbout() {
   document.getElementById("s-about").innerHTML = `
     <div class="about">
@@ -459,6 +528,7 @@ function renderAbout() {
       </div>
       <div class="links">
         <a class="lnk" href="${CHANNEL_URL}" data-ext="1"><div class="ic">${ICONS.tg}</div>Канал в Telegram<span class="chev">${ICONS.chev}</span></a>
+        <button class="lnk" data-tab="club"><div class="ic">${ICONS.lock}</div>Закрытый клуб Artur product<span class="chev">${ICONS.chev}</span></button>
         <a class="lnk" href="${CONTACT_URL}" data-ext="1"><div class="ic">${ICONS.send}</div>Написать Артуру<span class="chev">${ICONS.chev}</span></a>
       </div>
       <div class="setting"><div class="ic">${ICONS.moon}</div><div><b>Тёмное оформление</b><span>${theme === "dark" ? "Включено" : "Выключено — светлый фон"}</span></div>
@@ -471,11 +541,11 @@ function renderAbout() {
 }
 
 function renderTabs() {
-  const T = [["home","Главная","home"],["base","Товары","base"],["brands","Бренды","book"],["saved","Избранное","star"],["about","О базе","info"]];
+  const T = [["home","Главная","home"],["base","Товары","base"],["brands","Бренды","book"],["club","Клуб","lock"],["about","О базе","info"]];
   document.getElementById("tabs").innerHTML = T.map(([id,l,ic]) => `<button class="tab ${tab===id?"on":""}" data-tab="${id}">${ICONS[ic]}${l}</button>`).join("");
   document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === "s-" + tab));
 }
-function renderAll() { renderHome(); renderBase(); renderBrands(); renderSaved(); renderAbout(); renderTabs(); }
+function renderAll() { renderHome(); renderBase(); renderBrands(); renderSaved(); renderClub(); renderAbout(); renderTabs(); loadClub(); }
 
 /* ---------- карточка товара ---------- */
 function openProduct(id) {
@@ -512,7 +582,7 @@ function openProduct(id) {
         ${(p.page && !p.review) ? `<a class="act ${p.post ? "" : "primary"}" href="${p.page}" data-ext="1">${ICONS.image}Скрины и оригинальный ролик</a>` : ""}
         ${bf ? `<button class="act" data-brand="${bf.id}">${ICONS.book}Разбор бренда</button>` : (p.pdf ? `<a class="act" href="${p.pdf}" data-ext="1">${ICONS.doc}Полный разбор в PDF</a>` : "")}
         ${(p.sources && p.sources.length) ? p.sources.map(sr => sr.u ? `<a class="act" href="${sr.u}" data-ext="1">${ICONS.link}${esc(sr.t)}</a>` : `<span class="act todo">${ICONS.link}${esc(sr.t)} — ссылку добавить</span>`).join("") : (p.sourceUrl ? `<a class="act" href="${p.sourceUrl}" data-ext="1">${ICONS.link}Источник${/tiktok\.com/.test(p.sourceUrl) ? " (TikTok, нужен VPN)" : ""}</a>` : "")}
-        <a class="act ghost" href="${CONTACT_URL}" data-ext="1">${ICONS.send}Обсудить этот товар с Артуром</a>
+        <button class="act ${club.status === "active" ? "ghost" : ""}" data-tab="club" data-from="${p.id}">${ICONS.lock}${club.status === "active" ? "Обсудить этот товар в клубе" : "Закрытый клуб Artur product"}</button>
       </div>
     </div>`;
   const sh = document.getElementById("sheet");
@@ -547,7 +617,7 @@ function openBrand(id) {
       ${lk ? `<div class="lnks">${lk}</div>` : ""}
       <div class="acts">
         ${b.post ? `<a class="act" href="${b.post}" data-ext="1">${ICONS.tg}Пост в канале</a>` : ""}
-        <a class="act ghost" href="${CONTACT_URL}" data-ext="1">${ICONS.send}Обсудить с Артуром</a>
+        <button class="act ${club.status === "active" ? "ghost" : ""}" data-tab="club" data-from="${b.id}">${ICONS.lock}${club.status === "active" ? "Обсудить в клубе" : "Закрытый клуб Artur product"}</button>
       </div>
     </div></div>`;
   const sh = document.getElementById("sheet");
@@ -583,14 +653,16 @@ document.addEventListener("click", e => {
   if (t.dataset.snd !== undefined) { const el = document.getElementById("bv" + t.dataset.snd); el.muted = !el.muted; t.textContent = el.muted ? "Включить звук" : "Выключить звук"; if (!el.muted) el.play().catch(() => {}); return; }
   if (t.dataset.ext) { e.preventDefault(); const u = t.getAttribute("href"); if (tg && /t\.me\//.test(u)) tg.openTelegramLink(u); else if (tg) tg.openLink(u); else window.open(u, "_blank"); return; }
   if (t.dataset.themeToggle) { applyTheme(theme === "dark" ? "light" : "dark", true); renderAbout(); return; }
-  if (t.dataset.tab) { tab = t.dataset.tab; renderTabs(); window.scrollTo(0,0); return; }
+  if (t.dataset.tab) {
+    if (t.dataset.tab === "club" && t.dataset.from !== undefined) { closeProduct(); loadClub(t.dataset.from); }
+    tab = t.dataset.tab; renderTabs(); window.scrollTo(0,0); return; }
   if (t.dataset.quick) { filter = t.dataset.quick; category = "Все"; query = ""; tab = "base"; renderBase(); renderTabs(); window.scrollTo(0,0); return; }
   if (t.dataset.cat) { category = t.dataset.cat; renderBase(); return; }
   if (t.dataset.clear) { filter = null; renderBase(); return; }
   if (t.dataset.open) { openProduct(t.dataset.open); return; }
   if (t.dataset.brand) { openBrand(t.dataset.brand); return; }
   if (t.dataset.close) { closeProduct(); return; }
-  if (t.dataset.star) { const id = t.dataset.star; saved.has(id) ? saved.delete(id) : saved.add(id); t.classList.toggle("on"); persistSaved(); renderSaved(); return; }
+  if (t.dataset.star) { const id = t.dataset.star; saved.has(id) ? saved.delete(id) : saved.add(id); t.classList.toggle("on"); persistSaved(); renderSaved(); renderHome(); return; }
 });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closeProduct(); });
 
