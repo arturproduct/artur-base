@@ -37,6 +37,14 @@ details p{padding:0 0 4px;font-size:14px}
 .cta{display:grid;gap:8px;margin-top:22px} .btn{display:block;text-align:center;border-radius:14px;padding:15px 18px;font-weight:700;font-size:15px}
 .btn.p{background:var(--accent);color:#141414} .btn.s{background:var(--dark);color:#fff} .btn.t{background:var(--panel);border:2px solid var(--line)}
 footer{margin-top:26px;padding-top:14px;border-top:2px solid var(--line);color:var(--meta);font-size:12.5px;font-weight:700;line-height:1.5} footer a{color:var(--grey);border-bottom:2px solid var(--line)}
+
+.blocks{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 2px}
+.blocks span{font-size:12px;font-weight:700;color:var(--grey);border:2px solid var(--line);border-radius:999px;padding:5px 10px;background:var(--bg)}
+.blocks span i{font-style:normal;color:var(--accent);margin-right:4px}
+.who .blocks{margin:8px 0 4px}
+.who .blocks span{color:#fff;background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22)}
+.blocks em{font-style:normal;font-weight:900;color:var(--meta);padding:5px 2px}
+.who .blocks em{color:#c9cbd1}
 </style><style>html.embed header,html.embed .pill,html.embed .cta{display:none!important}html.embed .wrap{padding-top:12px}</style>
 <script>if(/[?&]embed=1/.test(location.search))document.documentElement.classList.add('embed');</script>
 </head>
@@ -55,10 +63,10 @@ footer{margin-top:26px;padding-top:14px;border-top:2px solid var(--line);color:v
 <h2 id="g2"><i>2</i>В каком порядке читать</h2>
 <ol class="order">
 <li><b>Карточка в канале.</b> Минута, чтобы понять, интересен ли вам товар вообще.</li>
-<li><b>Кнопка «Полный разбор».</b> Там текст Артура, разбитый на блоки с номерами: что за товар, сколько продаёт, кто ещё продаёт, что можно сделать, вывод.</li>
+<li><b>Кнопка «Полный разбор».</b> Там текст Артура, разбитый на блоки с номерами. У разбора товара их шесть, и называются они всегда одинаково, точно так же, как в самом разборе:<div class="blocks"><span><i>1</i>Что за товар</span><span><i>2</i>Сколько продаёт главный бренд</span><span><i>3</i>Кто ещё продаёт и почём</span><span><i>4</i>Откуда взялся бренд и кто его покупает</span><span><i>5</i>Что можно сделать нам</span><span><i>6</i>Прогноз и мой вывод</span></div>У разбора бренда блоки свои, их список стоит в самом начале разбора.</li>
 <li><b>Серые плашки «Простыми словами».</b> Объясняют термины и цифры из блока выше. Если вы уже продаёте, их можно пропускать.</li>
 <li><b>Скрины аналитики и ролики.</b> Это доказательства: каждую цифру из текста можно найти на скрине.</li>
-<li><b>Вердикт и база товаров.</b> Вердикт в конце разбора, а в базе все товары с фильтром по вердикту.</li>
+<li><b>Вердикт и база товаров.</b> Вердикт в конце разбора, а в базе товаров он стоит первой строкой в каждой карточке.</li>
 </ol>
 <div class="easy" style="margin-top:12px"><b>Важно</b>Цифры в разборах настоящие, а решение и деньги ваши. Перед закупкой любого товара стоит заказать образец и посчитать полную себестоимость.</div>
 
@@ -71,12 +79,14 @@ footer{margin-top:26px;padding-top:14px;border-top:2px solid var(--line);color:v
 <div class="vd"><div class="vt"><i class="dot go"></i>Тестировал бы сейчас</div><p>Цифры сильные, риски понятные. Артур сам заказывал бы образцы и считал первую партию.</p></div><div class="vd"><div class="vt"><i class="dot check"></i>Переходил бы к дальнейшей аналитике</div><p>Интересно, но сначала нужно что-то проверить: цену завода, законность, качество образца.</p></div><div class="vd"><div class="vt"><i class="dot wait"></i>Пока наблюдал бы</div><p>Есть сигнал, но рано: например, непонятна сезонность. Стоит вернуться через месяц-два.</p></div>
 
 <h2 id="g5"><i>5</i>С чего начать вам</h2>
-<div class="who"><b>Ещё не продаю, только присматриваюсь</b><p>Читайте разборы целиком, с плашками «Простыми словами». Через пару недель станет понятно, как выглядит товар с цифрами и почему Артур выбирает одни и проходит мимо других. Деньги пока не тратьте.</p></div><div class="who"><b>Продаю на Авито, в рознице или оптом</b><p>Смотрите блоки «Сколько продаёт» и «Что можно сделать нам». Вам важны закупочная цена завода и размер партии, их Артур пишет отдельно.</p></div><div class="who"><b>Уже торгую на маркетплейсах</b><p>Плашки можно пропускать. Сразу открывайте скрины аналитики и вердикт, а в базе товаров включите фильтр «Тестировал бы сейчас».</p></div>
+<p>Три ситуации, и для каждой свои первые блоки. Названия блоков те же, что в разборе: нашли номер, открыли, прочитали.</p>
+<div class="who"><b>Ещё не продаю, только присматриваюсь</b><p>Читайте разбор целиком и по порядку, с первого блока до шестого, вместе с серыми плашками «Простыми словами». Через несколько разборов станет понятно, как выглядит товар с цифрами и почему Артур выбирает одни и проходит мимо других. Деньги пока не тратьте.</p><div class="blocks"><span><i>1</i>Что за товар</span><em>→</em><span><i>6</i>Прогноз и мой вывод</span></div></div><div class="who"><b>Продаю на Авито, в рознице или оптом</b><p>Ваши первые два блока. Второй показывает, есть ли спрос вообще. Пятый — цену у завода, размер партии и бюджет теста. Остальное можно дочитать потом.</p><div class="blocks"><span><i>2</i>Сколько продаёт главный бренд</span><span><i>5</i>Что можно сделать нам</span></div></div><div class="who"><b>Уже торгую на маркетплейсах</b><p>Плашки «Простыми словами» пропускайте. Начните с третьего блока: конкуренты и их цены на площадках. Потом шестой: прогноз и вердикт. Скрины аналитики лежат в разборе рядом с цифрами, а в базе товаров вердикт стоит первой строкой каждой карточки.</p><div class="blocks"><span><i>3</i>Кто ещё продаёт и почём</span><span><i>6</i>Прогноз и мой вывод</span></div></div>
+<div class="easy" style="margin-top:12px"><b>Разборы брендов</b>У них блоки свои, их список стоит в начале каждого разбора. Порядок тот же: сначала что за бренд и его цифры, в конце что из этого взять себе.</div>
 
 <div class="cta">
   <a class="btn p" href="https://t.me/ArturProductBot/base">Открыть базу товаров</a>
   <a class="btn s" href="https://arturproduct.github.io/artur-base/printer.html">Пример: разбор ИИ-принтера</a>
   <a class="btn t" href="https://t.me/arturproduct1">Вернуться в канал</a>
 </div>
-<footer>Остался вопрос по разбору? Задайте его в комментариях под постом, Артур отвечает. Закрытый клуб с ответами на вопросы: <a href="https://t.me/ArturProductBot?start=club">подробнее</a>.</footer>
+<footer>Остался вопрос по разбору? Задайте его в комментариях под постом, Артур отвечает.</footer>
 </div></body></html>
