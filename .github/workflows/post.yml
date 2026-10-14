@@ -1,0 +1,51 @@
+name: Пост в Telegram
+
+on:
+  push:
+    branches: [main]
+    paths: ["posts/*.json"]
+  workflow_dispatch:
+    inputs:
+      post:
+        description: "ID поста — имя файла в posts/ без .json (пусто = все неопубликованные)"
+        required: false
+        default: ""
+      to:
+        description: "Куда отправить (действует только вместе с ID поста)"
+        type: choice
+        options: [test, main]
+        default: test
+      force:
+        description: "Отправить, даже если этот пост уже публиковался"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tgpost
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Отправить в Telegram
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHANNEL: ${{ vars.CHANNEL }}
+          TEST_CHANNEL: ${{ vars.TEST_CHANNEL }}
+          POST: ${{ inputs.post }}
+          TO: ${{ inputs.to }}
+          FORCE: ${{ inputs.force }}
+        run: python3 tools/tgpost.py
+
+      - name: Записать ссылки на посты
+        run: |
+          git config user.name "artur-post-bot"
+          git config user.email "artur-post-bot@users.noreply.github.com"
+          git add posts/published.json
+          git diff --cached --quiet || (git commit -m "posts: ссылки на опубликованные посты" && git push)
