@@ -1,1 +1,10 @@
-{}
+{
+  "gpath:test": {
+    "id": "gpath",
+    "to": "test",
+    "message_id": 7,
+    "url": "https://t.me/adamasenberg/7",
+    "chat": "266040186",
+    "date": "2026-10-14 08:14"
+  }
+}
