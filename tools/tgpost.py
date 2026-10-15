@@ -4,13 +4,22 @@
 Берёт файлы posts/*.json, отправляет в канал те, что ещё не публиковались,
 и записывает ссылки на готовые посты в posts/published.json.
 
+Комментарии. Под постом с кнопками Telegram не показывает свою кнопку комментариев,
+поэтому после публикации в основной канал бот добавляет первой строкой кнопку
+«Открыть комментарии» — как Add Native Comments в ControllerBot. Ссылка ведёт в тред
+поста в чате обсуждения. Чтобы бот нашёл этот тред, он должен быть админом
+в чате обсуждения канала. Номер треда можно задать и вручную: "comments_thread" в posts/<id>.json.
+
 Переменные окружения:
   BOT_TOKEN     токен бота (секрет)
   CHANNEL       основной канал: @username или id вида -100…
-  TEST_CHANNEL  тестовый канал (необязательно)
+  TEST_CHANNEL  тестовый канал или личка для превью (необязательно)
   POST          id одного поста (имя файла без .json); пусто = все неопубликованные
   TO            куда слать, test или main; действует только вместе с POST
   FORCE         true = отправить, даже если этот пост в этот канал уже уходил
+
+Если пост уже вышел в основной канал без кнопки комментариев, повторный запуск
+с POST=<id> и TO=main (без FORCE) не отправляет пост заново, а только добавляет кнопку.
 """
 import glob, json, mimetypes, os, sys, time, urllib.error, urllib.request, uuid
 
@@ -20,9 +29,15 @@ PUB = os.path.join(POSTS, "published.json")
 TOKEN = os.environ.get("BOT_TOKEN", "").strip()
 CHANNELS = {"main": os.environ.get("CHANNEL", "").strip(), "test": os.environ.get("TEST_CHANNEL", "").strip()}
 API = os.environ.get("TG_API", "https://api.telegram.org") + f"/bot{TOKEN}/"
+COMMENTS_TEXT = "Открыть комментарии"
+WAIT_FORWARD = int(os.environ.get("WAIT_FORWARD", "45"))  # сколько секунд ждать копию поста в чате обсуждения
 
 
-def api(method, fields, files=None):
+class TgError(Exception):
+    pass
+
+
+def api(method, fields, files=None, fatal=True):
     boundary = uuid.uuid4().hex
     body = b""
     for k, v in fields.items():
@@ -45,23 +60,30 @@ def api(method, fields, files=None):
         except Exception:
             res = {"ok": False, "description": f"HTTP {e.code}"}
     if not res.get("ok"):
-        raise SystemExit(f"Telegram ответил ошибкой: {res.get('description')}")
+        if fatal:
+            raise SystemExit(f"Telegram ответил ошибкой ({method}): {res.get('description')}")
+        raise TgError(res.get("description") or "ошибка")
     return res["result"]
 
 
-def keyboard(buttons):
+def rows(buttons):
     if not buttons:
-        return None
-    rows = buttons if isinstance(buttons[0], list) else [buttons]
-    return {"inline_keyboard": [[{"text": b["text"], "url": b["url"]} for b in row] for row in rows]}
+        return []
+    rs = buttons if isinstance(buttons[0], list) else [buttons]
+    return [[{"text": b["text"], "url": b["url"]} for b in row] for row in rs]
+
+
+def keyboard(buttons):
+    rs = rows(buttons)
+    return {"inline_keyboard": rs} if rs else None
 
 
 def post_url(result, chat):
     mid = result["message_id"]
-    username = (result.get("chat") or {}).get("username")
-    if username:
-        return f"https://t.me/{username}/{mid}"
-    cid = str((result.get("chat") or {}).get("id") or chat)
+    c = result.get("chat") or {}
+    if c.get("username"):
+        return f"https://t.me/{c['username']}/{mid}"
+    cid = str(c.get("id") or chat)
     return f"https://t.me/c/{cid[4:]}/{mid}" if cid.startswith("-100") else ""
 
 
@@ -89,8 +111,86 @@ def send(post, target):
     with open(path, "rb") as f:
         data = f.read()
     result = api(method, fields, {field: (os.path.basename(media), data)})
-    return {"message_id": result["message_id"], "url": post_url(result, chat), "chat": chat,
-            "date": time.strftime("%Y-%m-%d %H:%M", time.gmtime(result.get("date", time.time())))}
+    rec = {"message_id": result["message_id"], "url": post_url(result, chat), "chat": chat,
+           "date": time.strftime("%Y-%m-%d %H:%M", time.gmtime(result.get("date", time.time())))}
+    if not rec["url"]:
+        rec.pop("url")  # превью в личку: ссылки на сообщение нет
+    return rec
+
+
+# ---------- комментарии ----------
+
+def find_thread(channel_id, post_id, group_id, wait):
+    """Ищет копию поста, которую Telegram сам переслал в чат обсуждения, и возвращает её номер."""
+    deadline = time.time() + wait
+    offset = None
+    found = None
+    while time.time() < deadline and not found:
+        fields = {"timeout": 5, "allowed_updates": ["message"]}
+        if offset:
+            fields["offset"] = offset
+        try:
+            updates = api("getUpdates", fields, fatal=False)
+        except TgError as e:
+            print(f"  комментарии: бот не может читать обновления ({e}). Номер треда можно задать вручную: \"comments_thread\" в файле поста")
+            return None
+        for u in updates:
+            offset = u["update_id"] + 1
+            m = u.get("message") or {}
+            if (m.get("chat") or {}).get("id") != group_id or not m.get("is_automatic_forward"):
+                continue
+            fo = m.get("forward_origin") or {}
+            src_chat = (fo.get("chat") or m.get("forward_from_chat") or {}).get("id")
+            src_id = fo.get("message_id") or m.get("forward_from_message_id")
+            if src_chat == channel_id and src_id == post_id:
+                found = m["message_id"]
+    if offset:
+        try:
+            api("getUpdates", {"offset": offset, "timeout": 0}, fatal=False)  # отметить прочитанными
+        except TgError:
+            pass
+    return found
+
+
+def add_comments(post, rec, thread=None):
+    """Добавляет к посту в канале первой строкой кнопку «Открыть комментарии».
+    thread — номер треда, заданный вручную (только для починки уже вышедшего поста)."""
+    if post.get("comments") is False:
+        return False
+    try:
+        channel = api("getChat", {"chat_id": rec["chat"]}, fatal=False)
+        group_id = channel.get("linked_chat_id")
+        if not group_id:
+            print("  комментарии: у канала нет чата обсуждения, кнопку не добавляю")
+            return False
+        group = api("getChat", {"chat_id": group_id}, fatal=False)
+    except TgError as e:
+        print(f"  комментарии: не удалось получить данные канала ({e})")
+        return False
+    thread = thread or find_thread(channel["id"], rec["message_id"], group_id, WAIT_FORWARD)
+    if not thread:
+        print("  комментарии: бот не увидел пост в чате обсуждения. Добавьте @ArturProductBot админом в чат обсуждения канала "
+              "и запустите ещё раз с этим постом и to: main — пост не продублируется, добавится только кнопка")
+        return False
+    gid = str(group_id)
+    if group.get("username"):
+        url = f"https://t.me/{group['username']}/{thread}?thread={thread}"
+    else:
+        url = f"https://t.me/c/{gid[4:] if gid.startswith('-100') else gid.lstrip('-')}/1000000?thread={thread}"
+    markup = {"inline_keyboard": [[{"text": COMMENTS_TEXT, "url": url}]] + rows(post.get("buttons"))}
+    try:
+        api("editMessageReplyMarkup", {"chat_id": rec["chat"], "message_id": rec["message_id"], "reply_markup": markup}, fatal=False)
+    except TgError as e:
+        print(f"  комментарии: не удалось добавить кнопку ({e})")
+        return False
+    rec["comments_url"] = url
+    print(f"  комментарии: кнопка добавлена → {url}")
+    return True
+
+
+def save(published):
+    with open(PUB, "w", encoding="utf-8") as f:
+        json.dump(published, f, ensure_ascii=False, indent=2)
 
 
 def main():
@@ -114,19 +214,25 @@ def main():
         target = (to if only and to else post.get("to", "test")).lower()
         key = f"{pid}:{target}"
         if key in published and not force:
+            rec = published[key]
+            # пост уже в канале, но без кнопки комментариев: только добавить кнопку, не отправляя заново
+            if only and target == "main" and not rec.get("comments_url") and post.get("comments") is not False:
+                print(f"{pid} → {target}: уже опубликован ({rec.get('url', rec['message_id'])}), добавляю кнопку комментариев")
+                if add_comments(post, rec, post.get("comments_thread")):
+                    save(published)
             continue
         print(f"{pid} → {target}")
         res = send(post, target)
         if not res:
             continue
         published[key] = {"id": pid, "to": target, **res}
-        with open(PUB, "w", encoding="utf-8") as f:
-            json.dump(published, f, ensure_ascii=False, indent=2)
-        print(f"  готово: {res['url'] or res['message_id']}")
+        save(published)
+        print(f"  готово: {res.get('url') or res['message_id']}")
+        if target == "main" and add_comments(post, published[key]):
+            save(published)
         done += 1
     if not os.path.exists(PUB):
-        with open(PUB, "w", encoding="utf-8") as f:
-            json.dump(published, f, ensure_ascii=False, indent=2)
+        save(published)
     print(f"Отправлено постов: {done}" if done else "Новых постов для отправки нет")
 
 
