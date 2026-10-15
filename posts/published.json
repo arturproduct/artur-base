@@ -6,5 +6,13 @@
     "url": "https://t.me/adamasenberg/7",
     "chat": "266040186",
     "date": "2026-10-14 08:14"
+  },
+  "baza:test": {
+    "id": "baza",
+    "to": "test",
+    "message_id": 8,
+    "url": "https://t.me/adamasenberg/8",
+    "chat": "266040186",
+    "date": "2026-10-15 07:38"
   }
 }
