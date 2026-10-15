@@ -18,8 +18,10 @@
   TO            куда слать, test или main; действует только вместе с POST
   FORCE         true = отправить, даже если этот пост в этот канал уже уходил
 
-Если пост уже вышел в основной канал без кнопки комментариев, повторный запуск
-с POST=<id> и TO=main (без FORCE) не отправляет пост заново, а только добавляет кнопку.
+Повторный запуск с POST=<id> и TO=main (без FORCE) пост заново не отправляет, а чинит уже вышедший:
+  • добавляет кнопку комментариев, если её нет;
+  • заменяет ролик или картинку, если в posts/<id>.json "media_version" больше, чем у вышедшего поста
+    (номер поста, просмотры, реакции и комментарии сохраняются, текст и кнопки остаются те же).
 """
 import glob, json, mimetypes, os, sys, time, urllib.error, urllib.request, uuid
 
@@ -87,17 +89,22 @@ def post_url(result, chat):
     return f"https://t.me/c/{cid[4:]}/{mid}" if cid.startswith("-100") else ""
 
 
-def send(post, target):
-    chat = CHANNELS.get(target, "")
-    if not chat:
-        print(f"  пропуск: не задан канал для «{target}» (переменная {'CHANNEL' if target == 'main' else 'TEST_CHANNEL'})")
-        return None
+def media_file(post):
     media = post.get("media", "")
     path = os.path.join(ROOT, media)
     if not media or not os.path.exists(path):
         raise SystemExit(f"  нет файла медиа: {media}")
     ext = os.path.splitext(media)[1].lower()
     kind = post.get("kind") or ("photo" if ext in (".png", ".jpg", ".jpeg", ".webp") else "animation")
+    return path, kind, media
+
+
+def send(post, target):
+    chat = CHANNELS.get(target, "")
+    if not chat:
+        print(f"  пропуск: не задан канал для «{target}» (переменная {'CHANNEL' if target == 'main' else 'TEST_CHANNEL'})")
+        return None
+    path, kind, media = media_file(post)
     method, field = {"photo": ("sendPhoto", "photo"), "video": ("sendVideo", "video"), "animation": ("sendAnimation", "animation")}[kind]
     fields = {
         "chat_id": chat,
@@ -112,7 +119,8 @@ def send(post, target):
         data = f.read()
     result = api(method, fields, {field: (os.path.basename(media), data)})
     rec = {"message_id": result["message_id"], "url": post_url(result, chat), "chat": chat,
-           "date": time.strftime("%Y-%m-%d %H:%M", time.gmtime(result.get("date", time.time())))}
+           "date": time.strftime("%Y-%m-%d %H:%M", time.gmtime(result.get("date", time.time()))),
+           "media_version": int(post.get("media_version", 1))}
     if not rec["url"]:
         rec.pop("url")  # превью в личку: ссылки на сообщение нет
     return rec
@@ -188,6 +196,35 @@ def add_comments(post, rec, thread=None):
     return True
 
 
+# ---------- замена медиа в уже вышедшем посте ----------
+
+def replace_media(post, rec):
+    """Меняет ролик или картинку в опубликованном посте, не удаляя его. Текст и кнопки передаются заново,
+    иначе Telegram их сотрёт; кнопка комментариев сохраняется."""
+    path, kind, media = media_file(post)
+    im = {"type": kind, "media": "attach://file", "caption": post.get("caption", ""), "parse_mode": post.get("parse_mode", "Markdown")}
+    if kind == "video":
+        im["supports_streaming"] = True
+    rs = rows(post.get("buttons"))
+    if rec.get("comments_url"):
+        rs = [[{"text": COMMENTS_TEXT, "url": rec["comments_url"]}]] + rs
+    fields = {"chat_id": rec["chat"], "message_id": rec["message_id"], "media": im,
+              "reply_markup": {"inline_keyboard": rs} if rs else None}
+    with open(path, "rb") as f:
+        data = f.read()
+    try:
+        api("editMessageMedia", fields, {"file": (os.path.basename(media), data)}, fatal=False)
+    except TgError as e:
+        if "not modified" not in str(e):
+            print(f"  медиа: не удалось заменить ({e})")
+            return False
+        print("  медиа: в посте уже этот файл")
+    rec["media_version"] = int(post.get("media_version", 1))
+    rec["media_updated"] = time.strftime("%Y-%m-%d %H:%M", time.gmtime())
+    print(f"  медиа: заменено на {media} (версия {rec['media_version']})")
+    return True
+
+
 def save(published):
     with open(PUB, "w", encoding="utf-8") as f:
         json.dump(published, f, ensure_ascii=False, indent=2)
@@ -215,11 +252,22 @@ def main():
         key = f"{pid}:{target}"
         if key in published and not force:
             rec = published[key]
-            # пост уже в канале, но без кнопки комментариев: только добавить кнопку, не отправляя заново
-            if only and target == "main" and not rec.get("comments_url") and post.get("comments") is not False:
-                print(f"{pid} → {target}: уже опубликован ({rec.get('url', rec['message_id'])}), добавляю кнопку комментариев")
-                if add_comments(post, rec, post.get("comments_thread")):
-                    save(published)
+            if not only:
+                continue
+            changed = False
+            where = rec.get("url", rec["message_id"])
+            # новый ролик или картинка: заменить в вышедшем посте, не отправляя заново
+            if int(post.get("media_version", 1)) > int(rec.get("media_version", 1)):
+                print(f"{pid} → {target}: уже опубликован ({where}), заменяю медиа")
+                changed |= replace_media(post, rec)
+            # пост в канале без кнопки комментариев: добавить кнопку
+            if target == "main" and not rec.get("comments_url") and post.get("comments") is not False:
+                print(f"{pid} → {target}: уже опубликован ({where}), добавляю кнопку комментариев")
+                changed |= add_comments(post, rec, post.get("comments_thread"))
+            if changed:
+                save(published)
+            else:
+                print(f"{pid} → {target}: уже опубликован ({where}), менять нечего")
             continue
         print(f"{pid} → {target}")
         res = send(post, target)
