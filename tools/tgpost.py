@@ -128,7 +128,17 @@ def send(post, target, published=None):
             print(f"  ответ: пост «{reply}» в «{target}» не найден, отправляю без ответа")
     with open(path, "rb") as f:
         data = f.read()
-    result = api(method, fields, {field: (os.path.basename(media), data)})
+    try:
+        result = api(method, fields, {field: (os.path.basename(media), data)}, fatal=False)
+    except TgError as e:
+        # у получателя запрещены голосовые (настройка конфиденциальности) — превью отправляем аудиофайлом
+        if kind == "voice" and "VOICE_MESSAGES_FORBIDDEN" in str(e):
+            print("  голосовые у получателя запрещены настройками Telegram — отправляю превью аудиофайлом. "
+                  "В канале будет обычное голосовое. Чтобы превью тоже было голосовым: Настройки → Конфиденциальность → "
+                  "Голосовые сообщения → исключения «Всегда разрешать» → добавить бота")
+            result = api("sendAudio", dict(fields, title="Голосовое (превью)"), {"audio": (os.path.basename(media), data)})
+        else:
+            raise SystemExit(f"Telegram ответил ошибкой ({method}): {e}")
     rec = {"message_id": result["message_id"], "url": post_url(result, chat), "chat": chat,
            "date": time.strftime("%Y-%m-%d %H:%M", time.gmtime(result.get("date", time.time()))),
            "media_version": int(post.get("media_version", 1))}
