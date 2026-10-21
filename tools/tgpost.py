@@ -18,6 +18,8 @@
   TO            куда слать, test или main; действует только вместе с POST
   FORCE         true = отправить, даже если этот пост в этот канал уже уходил
 
+Голосовое: "media" — файл .ogg (кодек opus), "kind": "voice". Ответом на вышедший пост: "reply_to": "<id того поста>".
+
 Повторный запуск с POST=<id> и TO=main (без FORCE) пост заново не отправляет, а чинит уже вышедший:
   • добавляет кнопку комментариев, если её нет;
   • заменяет ролик или картинку, если в posts/<id>.json "media_version" больше, чем у вышедшего поста
@@ -95,17 +97,18 @@ def media_file(post):
     if not media or not os.path.exists(path):
         raise SystemExit(f"  нет файла медиа: {media}")
     ext = os.path.splitext(media)[1].lower()
-    kind = post.get("kind") or ("photo" if ext in (".png", ".jpg", ".jpeg", ".webp") else "animation")
+    kind = post.get("kind") or ("photo" if ext in (".png", ".jpg", ".jpeg", ".webp") else "voice" if ext in (".ogg", ".oga", ".opus") else "animation")
     return path, kind, media
 
 
-def send(post, target):
+def send(post, target, published=None):
     chat = CHANNELS.get(target, "")
     if not chat:
         print(f"  пропуск: не задан канал для «{target}» (переменная {'CHANNEL' if target == 'main' else 'TEST_CHANNEL'})")
         return None
     path, kind, media = media_file(post)
-    method, field = {"photo": ("sendPhoto", "photo"), "video": ("sendVideo", "video"), "animation": ("sendAnimation", "animation")}[kind]
+    method, field = {"photo": ("sendPhoto", "photo"), "video": ("sendVideo", "video"), "animation": ("sendAnimation", "animation"),
+                     "voice": ("sendVoice", "voice"), "audio": ("sendAudio", "audio")}[kind]
     fields = {
         "chat_id": chat,
         "caption": post.get("caption", ""),
@@ -115,6 +118,14 @@ def send(post, target):
     }
     if kind in ("video", "animation"):
         fields["supports_streaming"] = True
+    # ответ на другой пост: "reply_to": "<id поста>" — берём номер сообщения из published.json для того же канала
+    reply = post.get("reply_to")
+    if reply and published:
+        prev = published.get(f"{reply}:{target}")
+        if prev:
+            fields["reply_parameters"] = {"message_id": prev["message_id"], "allow_sending_without_reply": True}
+        else:
+            print(f"  ответ: пост «{reply}» в «{target}» не найден, отправляю без ответа")
     with open(path, "rb") as f:
         data = f.read()
     result = api(method, fields, {field: (os.path.basename(media), data)})
@@ -202,6 +213,9 @@ def replace_media(post, rec):
     """Меняет ролик или картинку в опубликованном посте, не удаляя его. Текст и кнопки передаются заново,
     иначе Telegram их сотрёт; кнопка комментариев сохраняется."""
     path, kind, media = media_file(post)
+    if kind == "voice":
+        print("  медиа: голосовое в вышедшем посте Telegram заменить не даёт")
+        return False
     im = {"type": kind, "media": "attach://file", "caption": post.get("caption", ""), "parse_mode": post.get("parse_mode", "Markdown")}
     if kind == "video":
         im["supports_streaming"] = True
@@ -270,7 +284,7 @@ def main():
                 print(f"{pid} → {target}: уже опубликован ({where}), менять нечего")
             continue
         print(f"{pid} → {target}")
-        res = send(post, target)
+        res = send(post, target, published)
         if not res:
             continue
         published[key] = {"id": pid, "to": target, **res}
