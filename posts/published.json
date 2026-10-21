@@ -72,5 +72,14 @@
     "date": "2026-10-21 07:16",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=369"
+  },
+  "candle_voice:test": {
+    "id": "candle_voice",
+    "to": "test",
+    "message_id": 17,
+    "url": "https://t.me/adamasenberg/17",
+    "chat": "266040186",
+    "date": "2026-10-21 07:41",
+    "media_version": 1
   }
 }
