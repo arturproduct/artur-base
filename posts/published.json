@@ -100,5 +100,14 @@
     "date": "2026-10-22 10:26",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=374"
+  },
+  "meter:test": {
+    "id": "meter",
+    "to": "test",
+    "message_id": 20,
+    "url": "https://t.me/adamasenberg/20",
+    "chat": "266040186",
+    "date": "2026-10-23 09:07",
+    "media_version": 1
   }
 }
