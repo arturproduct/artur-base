@@ -138,5 +138,14 @@
     "date": "2026-10-26 06:39",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=384"
+  },
+  "helmets:test": {
+    "id": "helmets",
+    "to": "test",
+    "message_id": 23,
+    "url": "https://t.me/adamasenberg/23",
+    "chat": "266040186",
+    "date": "2026-10-27 06:45",
+    "media_version": 1
   }
 }
