@@ -166,5 +166,15 @@
     "chat": "266040186",
     "date": "2026-10-28 06:45",
     "media_version": 1
+  },
+  "blanket:main": {
+    "id": "blanket",
+    "to": "main",
+    "message_id": 369,
+    "url": "https://t.me/arturproduct1/369",
+    "chat": "@arturproduct1",
+    "date": "2026-10-28 07:36",
+    "media_version": 1,
+    "comments_url": "https://t.me/c/2336097706/1000000?thread=387"
   }
 }
