@@ -157,5 +157,14 @@
     "date": "2026-10-27 07:07",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=385"
+  },
+  "blanket:test": {
+    "id": "blanket",
+    "to": "test",
+    "message_id": 25,
+    "url": "https://t.me/adamasenberg/25",
+    "chat": "266040186",
+    "date": "2026-10-28 06:45",
+    "media_version": 1
   }
 }
