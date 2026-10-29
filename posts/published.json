@@ -185,5 +185,15 @@
     "chat": "266040186",
     "date": "2026-10-29 06:31",
     "media_version": 1
+  },
+  "glowmate:main": {
+    "id": "glowmate",
+    "to": "main",
+    "message_id": 370,
+    "url": "https://t.me/arturproduct1/370",
+    "chat": "@arturproduct1",
+    "date": "2026-10-29 06:34",
+    "media_version": 1,
+    "comments_url": "https://t.me/c/2336097706/1000000?thread=388"
   }
 }
