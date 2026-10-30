@@ -195,5 +195,14 @@
     "date": "2026-10-29 06:34",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=388"
+  },
+  "mwshelf:test": {
+    "id": "mwshelf",
+    "to": "test",
+    "message_id": 27,
+    "url": "https://t.me/adamasenberg/27",
+    "chat": "266040186",
+    "date": "2026-10-30 06:25",
+    "media_version": 1
   }
 }
