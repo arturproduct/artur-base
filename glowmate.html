@@ -137,4 +137,5 @@ function shut(){ov.classList.remove('on');ov.setAttribute('aria-hidden','true');
 document.addEventListener('click',function(e){var a=e.target.closest('[data-howto],a[href="guide.html"]');if(a){e.preventDefault();open();return}if(e.target.closest('[data-howto-close]')){e.preventDefault();if(history.state&&history.state.howto)history.back();else shut()}});
 window.addEventListener('popstate',function(){if(ov.classList.contains('on'))shut()});})();</script>
 <script>(function(){try{var p=(location.pathname.split('/').pop()||'index').replace(/\.html$/,'')+(/[?&]embed=1/.test(location.search)?'-embed':'');var ref=(document.referrer||'').replace(/^https?:\/\//,'').split('/')[0];fetch('club_config.json?'+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(c){if(!c||!c.api)return;fetch(c.api.replace(/\/$/,'')+'/api/track',{method:'POST',keepalive:true,body:JSON.stringify({events:[{t:'page',item:p,src:ref,platform:/Telegram/i.test(navigator.userAgent)?'tg-web':'web'}]})}).catch(function(){})}).catch(function(){})}catch(e){}})();</script>
+<script src="upd.js" defer></script>
 </body></html>
