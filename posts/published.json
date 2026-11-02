@@ -204,5 +204,15 @@
     "chat": "266040186",
     "date": "2026-10-30 06:25",
     "media_version": 1
+  },
+  "mwshelf:main": {
+    "id": "mwshelf",
+    "to": "main",
+    "message_id": 375,
+    "url": "https://t.me/arturproduct1/375",
+    "chat": "@arturproduct1",
+    "date": "2026-11-02 06:27",
+    "media_version": 1,
+    "comments_url": "https://t.me/c/2336097706/1000000?thread=393"
   }
 }
