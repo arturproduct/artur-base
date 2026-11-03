@@ -223,5 +223,15 @@
     "chat": "266040186",
     "date": "2026-11-03 08:12",
     "media_version": 1
+  },
+  "stickerprint:main": {
+    "id": "stickerprint",
+    "to": "main",
+    "message_id": 378,
+    "url": "https://t.me/arturproduct1/378",
+    "chat": "@arturproduct1",
+    "date": "2026-11-03 08:22",
+    "media_version": 1,
+    "comments_url": "https://t.me/c/2336097706/1000000?thread=399"
   }
 }
