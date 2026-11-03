@@ -214,5 +214,14 @@
     "date": "2026-11-02 06:27",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=393"
+  },
+  "stickerprint:test": {
+    "id": "stickerprint",
+    "to": "test",
+    "message_id": 28,
+    "url": "https://t.me/adamasenberg/28",
+    "chat": "266040186",
+    "date": "2026-11-03 08:12",
+    "media_version": 1
   }
 }
