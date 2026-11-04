@@ -233,5 +233,14 @@
     "date": "2026-11-03 08:22",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=399"
+  },
+  "pillow:test": {
+    "id": "pillow",
+    "to": "test",
+    "message_id": 29,
+    "url": "https://t.me/adamasenberg/29",
+    "chat": "266040186",
+    "date": "2026-11-04 05:56",
+    "media_version": 1
   }
 }
