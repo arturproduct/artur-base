@@ -261,5 +261,14 @@
     "chat": "266040186",
     "date": "2026-11-04 10:54",
     "media_version": 1
+  },
+  "demo_mwshelf2:test": {
+    "id": "demo_mwshelf2",
+    "to": "test",
+    "message_id": 31,
+    "url": "https://t.me/adamasenberg/31",
+    "chat": "266040186",
+    "date": "2026-11-04 10:57",
+    "media_version": 1
   }
 }
