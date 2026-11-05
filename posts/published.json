@@ -288,5 +288,15 @@
     "chat": "266040186",
     "date": "2026-11-05 07:10",
     "media_version": 1
+  },
+  "massagehead:main": {
+    "id": "massagehead",
+    "to": "main",
+    "message_id": 381,
+    "url": "https://t.me/arturproduct1/381",
+    "chat": "@arturproduct1",
+    "date": "2026-11-05 08:16",
+    "media_version": 1,
+    "comments_url": "https://t.me/c/2336097706/1000000?thread=405"
   }
 }
