@@ -298,5 +298,14 @@
     "date": "2026-11-05 08:16",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=405"
+  },
+  "powerstrip:test": {
+    "id": "powerstrip",
+    "to": "test",
+    "message_id": 34,
+    "url": "https://t.me/adamasenberg/34",
+    "chat": "266040186",
+    "date": "2026-11-06 13:58",
+    "media_version": 1
   }
 }
