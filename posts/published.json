@@ -326,5 +326,15 @@
     "chat": "266040186",
     "date": "2026-11-09 06:16",
     "media_version": 1
+  },
+  "naturecraft:main": {
+    "id": "naturecraft",
+    "to": "main",
+    "message_id": 384,
+    "url": "https://t.me/arturproduct1/384",
+    "chat": "@arturproduct1",
+    "date": "2026-11-09 06:28",
+    "media_version": 1,
+    "comments_url": "https://t.me/c/2336097706/1000000?thread=411"
   }
 }
