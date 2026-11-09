@@ -317,5 +317,14 @@
     "date": "2026-11-06 14:01",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=406"
+  },
+  "naturecraft:test": {
+    "id": "naturecraft",
+    "to": "test",
+    "message_id": 36,
+    "url": "https://t.me/adamasenberg/36",
+    "chat": "266040186",
+    "date": "2026-11-09 06:16",
+    "media_version": 1
   }
 }
