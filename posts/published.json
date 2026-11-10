@@ -340,10 +340,10 @@
   "brakelight:test": {
     "id": "brakelight",
     "to": "test",
-    "message_id": 39,
-    "url": "https://t.me/adamasenberg/39",
+    "message_id": 40,
+    "url": "https://t.me/adamasenberg/40",
     "chat": "266040186",
-    "date": "2026-11-10 08:50",
+    "date": "2026-11-10 08:57",
     "media_version": 1
   }
 }
