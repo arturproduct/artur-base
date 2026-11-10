@@ -336,5 +336,14 @@
     "date": "2026-11-09 06:28",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=411"
+  },
+  "brakelight:test": {
+    "id": "brakelight",
+    "to": "test",
+    "message_id": 39,
+    "url": "https://t.me/adamasenberg/39",
+    "chat": "266040186",
+    "date": "2026-11-10 08:50",
+    "media_version": 1
   }
 }
