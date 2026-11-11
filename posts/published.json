@@ -359,10 +359,10 @@
   "dexcamera:test": {
     "id": "dexcamera",
     "to": "test",
-    "message_id": 44,
-    "url": "https://t.me/adamasenberg/44",
+    "message_id": 45,
+    "url": "https://t.me/adamasenberg/45",
     "chat": "266040186",
-    "date": "2026-11-11 07:14",
+    "date": "2026-11-11 07:21",
     "media_version": 1
   }
 }
