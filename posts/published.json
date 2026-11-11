@@ -355,5 +355,14 @@
     "date": "2026-11-10 09:03",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=420"
+  },
+  "dexcamera:test": {
+    "id": "dexcamera",
+    "to": "test",
+    "message_id": 44,
+    "url": "https://t.me/adamasenberg/44",
+    "chat": "266040186",
+    "date": "2026-11-11 07:14",
+    "media_version": 1
   }
 }
