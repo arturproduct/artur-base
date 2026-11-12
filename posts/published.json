@@ -374,5 +374,14 @@
     "date": "2026-11-11 07:23",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=421"
+  },
+  "aitoys:test": {
+    "id": "aitoys",
+    "to": "test",
+    "message_id": 46,
+    "url": "https://t.me/adamasenberg/46",
+    "chat": "266040186",
+    "date": "2026-11-12 07:30",
+    "media_version": 1
   }
 }
