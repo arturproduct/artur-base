@@ -402,5 +402,14 @@
     "chat": "266040186",
     "date": "2026-11-13 07:57",
     "media_version": 1
+  },
+  "bodymask:test": {
+    "id": "bodymask",
+    "to": "test",
+    "message_id": 50,
+    "url": "https://t.me/adamasenberg/50",
+    "chat": "266040186",
+    "date": "2026-11-13 08:08",
+    "media_version": 1
   }
 }
