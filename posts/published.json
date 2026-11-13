@@ -393,5 +393,14 @@
     "date": "2026-11-12 07:42",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=423"
+  },
+  "pliers:test": {
+    "id": "pliers",
+    "to": "test",
+    "message_id": 49,
+    "url": "https://t.me/adamasenberg/49",
+    "chat": "266040186",
+    "date": "2026-11-13 07:57",
+    "media_version": 1
   }
 }
