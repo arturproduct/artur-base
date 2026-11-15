@@ -421,5 +421,14 @@
     "date": "2026-11-13 08:12",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=424"
+  },
+  "tdmneo:test": {
+    "id": "tdmneo",
+    "to": "test",
+    "message_id": 52,
+    "url": "https://t.me/adamasenberg/52",
+    "chat": "266040186",
+    "date": "2026-11-15 18:13",
+    "media_version": 1
   }
 }
