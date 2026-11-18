@@ -459,5 +459,14 @@
     "date": "2026-11-17 06:39",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=426"
+  },
+  "onail:test": {
+    "id": "onail",
+    "to": "test",
+    "message_id": 56,
+    "url": "https://t.me/adamasenberg/56",
+    "chat": "266040186",
+    "date": "2026-11-18 07:13",
+    "media_version": 1
   }
 }
