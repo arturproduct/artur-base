@@ -478,5 +478,14 @@
     "date": "2026-11-18 07:51",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=427"
+  },
+  "wrapcutter:test": {
+    "id": "wrapcutter",
+    "to": "test",
+    "message_id": 57,
+    "url": "https://t.me/adamasenberg/57",
+    "chat": "266040186",
+    "date": "2026-11-18 20:29",
+    "media_version": 1
   }
 }
