@@ -497,5 +497,14 @@
     "date": "2026-11-19 06:49",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=428"
+  },
+  "holder2:test": {
+    "id": "holder2",
+    "to": "test",
+    "message_id": 60,
+    "url": "https://t.me/adamasenberg/60",
+    "chat": "266040186",
+    "date": "2026-11-19 18:13",
+    "media_version": 1
   }
 }
