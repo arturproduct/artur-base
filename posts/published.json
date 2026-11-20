@@ -506,5 +506,15 @@
     "chat": "266040186",
     "date": "2026-11-19 18:13",
     "media_version": 1
+  },
+  "holder2:main": {
+    "id": "holder2",
+    "to": "main",
+    "message_id": 395,
+    "url": "https://t.me/arturproduct1/395",
+    "chat": "@arturproduct1",
+    "date": "2026-11-20 08:25",
+    "media_version": 1,
+    "comments_url": "https://t.me/c/2336097706/1000000?thread=438"
   }
 }
