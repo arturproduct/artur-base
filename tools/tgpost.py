@@ -35,6 +35,9 @@ CHANNELS = {"main": os.environ.get("CHANNEL", "").strip(), "test": os.environ.ge
 API = os.environ.get("TG_API", "https://api.telegram.org") + f"/bot{TOKEN}/"
 COMMENTS_TEXT = "Открыть комментарии"
 WAIT_FORWARD = int(os.environ.get("WAIT_FORWARD", "45"))  # сколько секунд ждать копию поста в чате обсуждения
+# Если у бота включён вебхук (сервер artur-bot выдаёт гайд), getUpdates недоступен.
+# Тогда номер треда берём у сервера бота: он запоминает копии постов в чате обсуждения.
+BOT_WORKER = os.environ.get("BOT_WORKER", "https://artur-bot.arman1415926.workers.dev").rstrip("/")
 
 
 class TgError(Exception):
@@ -149,6 +152,21 @@ def send(post, target, published=None):
 
 # ---------- комментарии ----------
 
+def thread_from_worker(post_id, deadline):
+    """Спрашивает у сервера бота номер треда, пока не истечёт время ожидания."""
+    url = f"{BOT_WORKER}/tg/thread?post={post_id}"
+    while time.time() < deadline:
+        try:
+            with urllib.request.urlopen(url, timeout=10) as r:
+                thread = json.load(r).get("thread")
+            if thread:
+                return int(thread)
+        except Exception:
+            pass
+        time.sleep(3)
+    return None
+
+
 def find_thread(channel_id, post_id, group_id, wait):
     """Ищет копию поста, которую Telegram сам переслал в чат обсуждения, и возвращает её номер."""
     deadline = time.time() + wait
@@ -161,8 +179,11 @@ def find_thread(channel_id, post_id, group_id, wait):
         try:
             updates = api("getUpdates", fields, fatal=False)
         except TgError as e:
-            print(f"  комментарии: бот не может читать обновления ({e}). Номер треда можно задать вручную: \"comments_thread\" в файле поста")
-            return None
+            print(f"  комментарии: getUpdates недоступен ({e}), беру номер треда у сервера бота")
+            found = thread_from_worker(post_id, deadline)
+            if not found:
+                print("  комментарии: сервер бота тред не нашёл. Номер треда можно задать вручную: \"comments_thread\" в файле поста")
+            return found
         for u in updates:
             offset = u["update_id"] + 1
             m = u.get("message") or {}
