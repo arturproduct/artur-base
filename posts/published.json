@@ -516,5 +516,14 @@
     "date": "2026-11-20 08:25",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=438"
+  },
+  "cheatpen:test": {
+    "id": "cheatpen",
+    "to": "test",
+    "message_id": 69,
+    "url": "https://t.me/adamasenberg/69",
+    "chat": "266040186",
+    "date": "2026-11-23 06:45",
+    "media_version": 1
   }
 }
