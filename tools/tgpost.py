@@ -155,15 +155,22 @@ def send(post, target, published=None):
 def thread_from_worker(post_id, deadline):
     """Спрашивает у сервера бота номер треда, пока не истечёт время ожидания."""
     url = f"{BOT_WORKER}/tg/thread?post={post_id}"
-    while time.time() < deadline:
+    # Cloudflare отклоняет запросы со стандартной подписью Python-urllib — представляемся своим именем
+    req = urllib.request.Request(url, headers={"User-Agent": "artur-post-bot/1.0 (+https://github.com/arturproduct/artur-base)", "Accept": "application/json"})
+    last_err = ""
+    while True:
         try:
-            with urllib.request.urlopen(url, timeout=10) as r:
+            with urllib.request.urlopen(req, timeout=10) as r:
                 thread = json.load(r).get("thread")
             if thread:
                 return int(thread)
-        except Exception:
-            pass
+            last_err = "тред ещё не записан"
+        except Exception as e:
+            last_err = f"{type(e).__name__}: {e}"
+        if time.time() >= deadline:
+            break
         time.sleep(3)
+    print(f"  комментарии: сервер бота ({BOT_WORKER}) — {last_err}")
     return None
 
 
