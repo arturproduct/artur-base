@@ -539,10 +539,10 @@
   "charger2:test": {
     "id": "charger2",
     "to": "test",
-    "message_id": 72,
-    "url": "https://t.me/adamasenberg/72",
+    "message_id": 73,
+    "url": "https://t.me/adamasenberg/73",
     "chat": "266040186",
-    "date": "2026-11-24 07:11",
+    "date": "2026-11-24 07:15",
     "media_version": 1
   }
 }
