@@ -535,5 +535,14 @@
     "date": "2026-11-23 06:59",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=439"
+  },
+  "charger2:test": {
+    "id": "charger2",
+    "to": "test",
+    "message_id": 72,
+    "url": "https://t.me/adamasenberg/72",
+    "chat": "266040186",
+    "date": "2026-11-24 07:11",
+    "media_version": 1
   }
 }
