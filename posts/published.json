@@ -544,5 +544,15 @@
     "chat": "266040186",
     "date": "2026-11-24 07:15",
     "media_version": 1
+  },
+  "charger2:main": {
+    "id": "charger2",
+    "to": "main",
+    "message_id": 397,
+    "url": "https://t.me/arturproduct1/397",
+    "chat": "@arturproduct1",
+    "date": "2026-11-24 08:00",
+    "media_version": 1,
+    "comments_url": "https://t.me/c/2336097706/1000000?thread=440"
   }
 }
