@@ -573,5 +573,14 @@
     "date": "2026-11-25 07:51",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=441"
+  },
+  "projector2:test": {
+    "id": "projector2",
+    "to": "test",
+    "message_id": 77,
+    "url": "https://t.me/adamasenberg/77",
+    "chat": "266040186",
+    "date": "2026-11-26 07:18",
+    "media_version": 1
   }
 }
