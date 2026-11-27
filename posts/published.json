@@ -592,5 +592,14 @@
     "date": "2026-11-26 07:24",
     "media_version": 1,
     "comments_url": "https://t.me/c/2336097706/1000000?thread=442"
+  },
+  "autovox:test": {
+    "id": "autovox",
+    "to": "test",
+    "message_id": 78,
+    "url": "https://t.me/adamasenberg/78",
+    "chat": "266040186",
+    "date": "2026-11-27 07:07",
+    "media_version": 1
   }
 }
